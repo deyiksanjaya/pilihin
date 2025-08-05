@@ -24,21 +24,35 @@
         #inputList::-webkit-scrollbar-track { background: #f1f5f9; }
         #inputList::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
         #inputList::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        /* Style for the language switcher */
+        #lang-switcher {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+        }
     </style>
 </head>
 <body class="bg-white dark:bg-slate-900 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
 
+    <!-- Language Switcher -->
+    <div id="lang-switcher">
+        <button onclick="switchLanguage()" class="bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold py-2 px-4 rounded-full text-sm shadow-md transition-transform hover:scale-105">
+            ID / EN
+        </button>
+    </div>
+
     <!-- Main Application Container -->
     <div id="app-container" class="w-full max-w-2xl flex flex-col items-center justify-center flex-grow">
         <header class="text-center mb-6">
-            <h1 class="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white">Let Fate Decide</h1>
-            <p class="text-base text-slate-500 dark:text-slate-400 mt-1">Enter your choices or pick a template</p>
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-800 dark:text-white" data-key="pageTitle">Let Fate Decide</h1>
+            <p class="text-base text-slate-500 dark:text-slate-400 mt-1" data-key="pageSubtitle">Enter your choices or pick a template</p>
         </header>
 
         <main class="w-full flex flex-col items-center flex-grow justify-center">
             <!-- Result Display -->
             <div id="output" class="w-full h-32 sm:h-40 bg-slate-100 dark:bg-slate-800/50 rounded-lg flex items-center justify-center text-center p-4 mb-4 shadow-md">
-                <span class="text-3xl md:text-4xl font-bold text-slate-700 dark:text-slate-200">Your Result Here</span>
+                <span class="text-3xl md:text-4xl font-bold text-slate-700 dark:text-slate-200" data-key="resultPlaceholder">Your Result Here</span>
             </div>
             
             <!-- Explanation Container (Initially Hidden) -->
@@ -47,12 +61,12 @@
                 <p id="explanation-text" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
                 <button id="google-search-button" class="mt-4 w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                    Search on Google
+                    <span data-key="googleSearch">Search on Google</span>
                 </button>
             </div>
 
             <!-- Input Area -->
-            <textarea id="inputList" class="w-full h-36 p-4 bg-slate-100 dark:bg-slate-800/50 border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all duration-200 mb-2 shadow-md" placeholder="Enter each choice on a new line..." rows="5"></textarea>
+            <textarea id="inputList" class="w-full h-36 p-4 bg-slate-100 dark:bg-slate-800/50 border-2 border-transparent focus:border-indigo-500 focus:ring-0 rounded-lg text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 transition-all duration-200 mb-2 shadow-md" data-key-placeholder="inputPlaceholder" rows="5"></textarea>
             
             <!-- Clear List Button Container -->
             <div id="clear-list-container" class="w-full flex justify-center mb-4 hidden">
@@ -60,34 +74,34 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Clear list
+                    <span data-key="clearList">Clear list</span>
                 </button>
             </div>
 
             <!-- Action Button -->
-            <button id="randomizeButton" onclick="toggleAnimation()" class="w-full text-white font-bold py-4 px-4 rounded-lg transition-all duration-300 ease-in-out text-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-opacity-50 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500">
+            <button id="randomizeButton" onclick="toggleAnimation()" class="w-full text-white font-bold py-4 px-4 rounded-lg transition-all duration-300 ease-in-out text-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-opacity-50 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500" data-key="startButton">
                 Start Picking
             </button>
         </main>
 
         <!-- Template Buttons Footer -->
         <footer class="w-full mt-8 pb-4">
-            <p class="text-xs text-center text-slate-400 dark:text-slate-500 mb-3 uppercase font-semibold">Or use a template</p>
+            <p class="text-xs text-center text-slate-400 dark:text-slate-500 mb-3 uppercase font-semibold" data-key="templateHeader">Or use a template</p>
             <div id="buttons" class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button class="button" onclick="loadList('Place to Go')">Places</button>
-                <button class="button" onclick="loadList('What to Eat')">Foods</button>
-                <button class="button" onclick="loadList('Activity to Do')">Activities</button>
-                <button class="button" onclick="loadList('Games to Play')">Games</button>
-                <button class="button" onclick="loadList('Movie Genre')">Movie Genre</button>
-                <button class="button" onclick="loadList('Music Genre')">Music Genre</button>
-                <button class="button" onclick="loadList('Drink Choice')">Drinks</button>
-                <button class="button" onclick="loadList('Workout Type')">Workouts</button>
-                <button class="button" onclick="loadList('Book Genre')">Book Genre</button>
-                <button class="button" onclick="loadList('Hobby to Try')">Hobbies</button>
-                <button class="button" onclick="loadList('Programming Language')">Code Languages</button>
-                <button class="button" onclick="loadList('Pet to Adopt')">Pets</button>
-                <button class="button" onclick="loadList('Vehicle Type')">Vehicles</button>
-                <button class="button" onclick="loadList('Art Style')">Art Styles</button>
+                <button class="button" onclick="loadList('Place to Go')" data-key="tpl-places">Places</button>
+                <button class="button" onclick="loadList('What to Eat')" data-key="tpl-foods">Foods</button>
+                <button class="button" onclick="loadList('Activity to Do')" data-key="tpl-activities">Activities</button>
+                <button class="button" onclick="loadList('Games to Play')" data-key="tpl-games">Games</button>
+                <button class="button" onclick="loadList('Movie Genre')" data-key="tpl-movies">Movie Genre</button>
+                <button class="button" onclick="loadList('Music Genre')" data-key="tpl-music">Music Genre</button>
+                <button class="button" onclick="loadList('Drink Choice')" data-key="tpl-drinks">Drinks</button>
+                <button class="button" onclick="loadList('Workout Type')" data-key="tpl-workouts">Workouts</button>
+                <button class="button" onclick="loadList('Book Genre')" data-key="tpl-books">Book Genre</button>
+                <button class="button" onclick="loadList('Hobby to Try')" data-key="tpl-hobbies">Hobbies</button>
+                <button class="button" onclick="loadList('Programming Language')" data-key="tpl-code">Code Languages</button>
+                <button class="button" onclick="loadList('Pet to Adopt')" data-key="tpl-pets">Pets</button>
+                <button class="button" onclick="loadList('Vehicle Type')" data-key="tpl-vehicles">Vehicles</button>
+                <button class="button" onclick="loadList('Art Style')" data-key="tpl-art">Art Styles</button>
             </div>
         </footer>
     </div>
@@ -101,16 +115,18 @@
     <div id="description-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity duration-300">
         <div class="relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 text-center">
             <img src="https://cdn-icons-png.flaticon.com/512/9001/9001394.png" alt="Magic Conch" class="w-24 h-24 mx-auto mb-4">
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Welcome to PICKER!</h2>
-            <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2" data-key="modalTitle">Welcome to PICKER!</h2>
+            <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-6" data-key="modalText">
                 Feeling indecisive? Let us help! Whether it's choosing a travel destination, your next meal, a fun activity, or a game to play, just input your options and we'll pick one for you. You can also use our handy templates to get started.
             </p>
-            <button onclick="closeDescription()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-8 rounded-lg transition-all duration-200">
+            <button onclick="closeDescription()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-8 rounded-lg transition-all duration-200" data-key="modalButton">
                 Got it!
             </button>
         </div>
     </div>
 
+    <!-- Hubungkan file translations.js -->
+    <script src="translations.js"></script>
     <script>
         // --- DOM Element References ---
         const outputDiv = document.getElementById("output");
@@ -129,13 +145,42 @@
         let items = [];
         let nextItem;
         let isAnimating = false;
+        let currentLang = localStorage.getItem('lang') || 'en'; // Default ke 'en'
         
         // --- Telegram API Details ---
         const TELEGRAM_BOT_TOKEN = '7639651359:AAF4XflfPvNvT6ku5APx3bSuzzbyG2cB_FY';
         const TELEGRAM_CHAT_ID = '8126543908';
 
+        // --- Language Functions ---
+        const setLanguage = (lang) => {
+            currentLang = lang;
+            localStorage.setItem('lang', lang); // Simpan pilihan bahasa
+            
+            // Ubah teks untuk elemen dengan data-key
+            document.querySelectorAll('[data-key]').forEach(element => {
+                const key = element.getAttribute('data-key');
+                if (translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+
+            // Ubah teks untuk placeholder
+            document.querySelectorAll('[data-key-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-key-placeholder');
+                if (translations[lang][key]) {
+                    element.placeholder = translations[lang][key];
+                }
+            });
+        };
+
+        const switchLanguage = () => {
+            const newLang = currentLang === 'en' ? 'id' : 'en';
+            setLanguage(newLang);
+        };
+
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
+            setLanguage(currentLang); // Terapkan bahasa saat halaman dimuat
             updateNextItemDisplay("Randomizer");
             
             document.querySelectorAll('#buttons .button').forEach(button => {
@@ -167,13 +212,13 @@
 
             const rawInput = inputList.value.trim();
             if (rawInput === "") {
-                outputDiv.innerHTML = `<span class="text-red-500 font-semibold">Input your list first!</span>`;
+                outputDiv.innerHTML = `<span class="text-red-500 font-semibold">${translations[currentLang].errorInputFirst}</span>`;
                 return;
             }
 
             items = shuffle(rawInput.split('\n').map(item => item.trim()).filter(Boolean));
             if (items.length === 0) {
-                outputDiv.innerHTML = `<span class="text-red-500 font-semibold">List cannot be empty.</span>`;
+                outputDiv.innerHTML = `<span class="text-red-500 font-semibold">${translations[currentLang].errorListEmpty}</span>`;
                 return;
             }
 
@@ -182,7 +227,7 @@
             sendResultToTelegramInBackground(nextItem);
 
             isAnimating = true;
-            randomizeButton.textContent = "Stop";
+            randomizeButton.textContent = translations[currentLang].stopButton;
             randomizeButton.classList.remove('bg-indigo-600', 'hover:bg-indigo-700', 'focus:ring-indigo-500');
             randomizeButton.classList.add('bg-red-600', 'hover:bg-red-700', 'focus:ring-red-500');
             
@@ -196,13 +241,13 @@
             clearInterval(animationInterval);
             isAnimating = false;
             
-            randomizeButton.textContent = "Start Picking";
+            randomizeButton.textContent = translations[currentLang].startButton;
             randomizeButton.classList.remove('bg-red-600', 'hover:bg-red-700', 'focus:ring-red-500');
             randomizeButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700', 'focus:ring-indigo-500');
 
             if (items.length > 0) {
                 outputDiv.innerHTML = `<span class="text-3xl md:text-4xl font-bold text-slate-700 dark:text-slate-200 animate-pulse">${nextItem}</span>`;
-                fetchWikipediaSummary(nextItem);
+                showGoogleSearchButton(nextItem);
                 setTimeout(() => {
                     if (!isAnimating) {
                          outputDiv.querySelector('span')?.classList.remove('animate-pulse');
@@ -227,6 +272,7 @@
         function loadList(type) {
             hideExplanation();
             let list = "";
+            // ... (Fungsi loadList tidak perlu diubah, karena hanya mengisi nilai textarea) ...
             switch(type) {
                 case 'Place to Go': 
                     list = "Bali\nRaja Ampat\nMount Bromo\nLabuan Bajo\nLake Toba\nBorobudur Temple\nKyoto\nParis\nRome\nNew York\nLondon\nSydney\nCape Town\nRio de Janeiro\nSantorini\nMaldives\nSwiss Alps\nGrand Canyon\nYogyakarta\nLombok\nTokyo\nSeoul\nBangkok\nDerawan Islands\nBelitung Island\nMachu Picchu\nDubai\nIceland\nBanff National Park\nPetra\nVenice\nAmsterdam\nSingapore\nHong Kong\nIstanbul\nBarcelona\nVancouver\nQueenstown\nHawaii\nPhuket\nHoi An\nHalong Bay\nMarrakech\nSafari in Serengeti"; 
@@ -241,10 +287,10 @@
                     list = "Mobile Legends\nPUBG Mobile\nValorant\nGenshin Impact\nMinecraft\nStardew Valley\nChess\nMonopoly\nUno\nWerewolf\nLudo\nSnakes and Ladders\nAmong Us\nRoblox\nFIFA\nAnimal Crossing\nLeague of Legends\nFortnite\nPlaying Cards\nCall of Duty\nApex Legends\nOverwatch\nDota 2\nCounter-Strike\nThe Sims\nPokémon Go\nClash of Clans\nClash Royale\nCandy Crush\nSudoku\nScrabble\nJenga\nPictionary\nTrivial Pursuit\nRisk\nCatan\nTetris\nPac-Man\nSuper Mario\nZelda"; 
                     break;
                 case 'Movie Genre': 
-                    list = "Action Movie\nComedy\nDrama\nSci-Fi\nHorror\nThriller\nRomance\nAnime\nDocumentary\nFantasy\nMystery\nAdventure\nMusical\nCrime\nBiography\nHistorical\nFamily\nWar\nWestern\nNoir\nSports\nRom-Com\nTeen\nDisaster\nSuperhero\nMartial Arts\nPsychological\nSatire\nSilent\nShort Film"; 
+                    list = "Action\nComedy\nDrama\nSci-Fi\nHorror\nThriller\nRomance\nAnimation\nDocumentary\nFantasy\nMystery\nAdventure\nMusical\nCrime\nBiography\nHistorical\nFamily\nWar\nWestern\nNoir\nSports\nRom-Com\nTeen\nDisaster\nSuperhero\nMartial Arts\nPsychological\nSatire\nSilent\nShort Film"; 
                     break;
                 case 'Music Genre': 
-                    list = "Pop\nRock\nHip Hop\nJazz\nElectronic (EDM)\nClassical\nR&B\nCountry\nReggae\nMetal\nIndie\nDangdut\nK-Pop\nJ-Pop\nFolk\nBlues\nAcoustic\nPunk\nSoul\nFunk\nDisco\nGospel\nTechno\nHouse Music\nDubstep\nTrap\nSka\nOpera\nOrchestral\nAmbient\nLatin\nBollywood\nAfrobeat\nBluegrass"; 
+                    list = "Pop\nRock\nHip Hop\nJazz\nElectronic (EDM)\nClassical\nR&B\nCountry\nReggae\nMetal\nIndie\nDangdut\nK-Pop\nJ-Pop\nFolk\nBlues\nAcoustic\nPunk\nSoul\nFunk\nDisco\nGospel\nTechno\nHouse\nDubstep\nTrap\nSka\nOpera\nOrchestral\nAmbient\nLatin\nBollywood\nAfrobeat\nBluegrass"; 
                     break;
                 case 'Drink Choice': 
                     list = "Black Coffee\nCoffee with Milk\nSweet Tea\nPlain Tea\nAvocado Juice\nOrange Juice\nFruit Smoothie\nMineral Water\nSoda\nHot Chocolate\nIced Coconut Water\nMilk\nTeh Tarik (Pulled Tea)\nGinger Tea\nCendol\nBoba Milk Tea\nMatcha Latte\nChai Tea\nLemonade\nIced Tea\nMilkshake\nCoconut Milk\nAlmond Milk\nGreen Tea\nHerbal Tea\nEspresso\nCappuccino\nLatte\nMocha\nWine\nBeer\nCocktail\nWhiskey\nVodka\nRum\nTequila\nSake\nSoju\nKombucha\nKefir"; 
@@ -310,18 +356,12 @@
 
         // --- API Functions ---
 
-        function fetchWikipediaSummary(term) {
-            // Display the result term in the title
-            explanationTitle.textContent = term;
-            // Clear the explanation text as it's no longer fetched
+        function showGoogleSearchButton(term) {
+            explanationTitle.textContent = `${translations[currentLang].explanationTitle} "${term}"`;
             explanationText.textContent = '';
-            // Show the container with the title and Google Search button
             explanationContainer.classList.remove('hidden');
 
-            // Set the Google Search button's action
             googleSearchButton.onclick = () => {
-                // Create a Google search query, replacing spaces with '+' as requested.
-                // encodeURIComponent is used first to handle any other special characters safely.
                 const googleQuery = encodeURIComponent(term).replace(/%20/g, '+');
                 window.location.replace(`https://www.google.com/search?q=${googleQuery}`);
             };
