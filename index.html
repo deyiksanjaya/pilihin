@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/9001/9001394.png">
-    <meta name="theme-color" content="#ffffff">
-    <title>PilihSatu</title>
+    <title>PilihSatu Untuk Kamu</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -13,37 +12,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-    /* Pastikan html dan body full tinggi dan putih */
-    html {
-        height: 100%;
-        background-color: white;
-    }
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Disable tap highlight on mobile */
+            /* Fallback for browsers that don't support the JS solution */
+            min-height: 100vh; 
+            /* Dynamic screen height for mobile browsers */
+            min-height: calc(var(--vh, 1vh) * 100);
+        }
 
-    body {
-        height: 100%;
-        min-height: 100vh;
-        background-color: white;
-        font-family: 'Inter', sans-serif;
-        -webkit-tap-highlight-color: transparent; /* Disable tap highlight on mobile */
-        /* Dynamic screen height for mobile browsers */
-        min-height: calc(var(--vh, 1vh) * 100);
-    }
-
-    /* Custom scrollbar for the textarea */
-    #inputList::-webkit-scrollbar {
-        width: 8px;
-    }
-    #inputList::-webkit-scrollbar-track {
-        background: #f1f5f9;
-    }
-    #inputList::-webkit-scrollbar-thumb {
-        background: #94a3b8;
-        border-radius: 10px;
-    }
-    #inputList::-webkit-scrollbar-thumb:hover {
-        background: #64748b;
-    }
-</style>
+        /* Custom scrollbar for the textarea */
+        #inputList::-webkit-scrollbar {
+            width: 8px;
+        }
+        #inputList::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        #inputList::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        #inputList::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
 </head>
 <body class="bg-white dark:bg-slate-900 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
 
