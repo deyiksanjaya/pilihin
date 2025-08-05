@@ -88,27 +88,27 @@
         <footer class="w-full mt-8 pb-4">
             <p class="text-xs text-center text-slate-400 dark:text-slate-500 mb-3 uppercase font-semibold" data-key="templateHeader">Or use a template</p>
             <div id="buttons" class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <button class="button" onclick="loadList('Place to Go')" data-key="tpl-places">Places</button>
-                <button class="button" onclick="loadList('What to Eat')" data-key="tpl-foods">Foods</button>
-                <button class="button" onclick="loadList('Activity to Do')" data-key="tpl-activities">Activities</button>
-                <button class="button" onclick="loadList('Games to Play')" data-key="tpl-games">Games</button>
-                <button class="button" onclick="loadList('Movie Genre')" data-key="tpl-movies">Movie Genre</button>
-                <button class="button" onclick="loadList('Music Genre')" data-key="tpl-music">Music Genre</button>
-                <button class="button" onclick="loadList('Drink Choice')" data-key="tpl-drinks">Drinks</button>
-                <button class="button" onclick="loadList('Workout Type')" data-key="tpl-workouts">Workouts</button>
-                <button class="button" onclick="loadList('Book Genre')" data-key="tpl-books">Book Genre</button>
-                <button class="button" onclick="loadList('Hobby to Try')" data-key="tpl-hobbies">Hobbies</button>
-                <button class="button" onclick="loadList('Programming Language')" data-key="tpl-code">Code Languages</button>
-                <button class="button" onclick="loadList('Pet to Adopt')" data-key="tpl-pets">Pets</button>
-                <button class="button" onclick="loadList('Vehicle Type')" data-key="tpl-vehicles">Vehicles</button>
-                <button class="button" onclick="loadList('Art Style')" data-key="tpl-art">Art Styles</button>
+                <button class="button" onclick="loadList('places')" data-key="tpl-places">Places</button>
+                <button class="button" onclick="loadList('foods')" data-key="tpl-foods">Foods</button>
+                <button class="button" onclick="loadList('activities')" data-key="tpl-activities">Activities</button>
+                <button class="button" onclick="loadList('games')" data-key="tpl-games">Games</button>
+                <button class="button" onclick="loadList('movies')" data-key="tpl-movies">Movie Genre</button>
+                <button class="button" onclick="loadList('music')" data-key="tpl-music">Music Genre</button>
+                <button class="button" onclick="loadList('drinks')" data-key="tpl-drinks">Drinks</button>
+                <button class="button" onclick="loadList('workouts')" data-key="tpl-workouts">Workouts</button>
+                <button class="button" onclick="loadList('books')" data-key="tpl-books">Book Genre</button>
+                <button class="button" onclick="loadList('hobbies')" data-key="tpl-hobbies">Hobbies</button>
+                <button class="button" onclick="loadList('code')" data-key="tpl-code">Code Languages</button>
+                <button class="button" onclick="loadList('pets')" data-key="tpl-pets">Pets</button>
+                <button class="button" onclick="loadList('vehicles')" data-key="tpl-vehicles">Vehicles</button>
+                <button class="button" onclick="loadList('art')" data-key="tpl-art">Art Styles</button>
             </div>
         </footer>
     </div>
     
     <!-- Version Info -->
     <div id="nextItemDisplay" class="fixed bottom-3 right-4 text-xs text-slate-400 dark:text-slate-500">
-        Randomizer v2.2.0
+        Randomizer v2.3.0
     </div>
 
     <!-- Description Modal -->
@@ -269,55 +269,16 @@
 
         // --- Template and Utility Functions ---
         
-        function loadList(type) {
+        /**
+         * Loads a predefined list into the textarea based on the provided key.
+         * The list is fetched from the translations object.
+         * @param {string} listKey - The key for the list in translations.js (e.g., 'places', 'foods').
+         */
+        function loadList(listKey) {
             hideExplanation();
-            let list = "";
-            // ... (Fungsi loadList tidak perlu diubah, karena hanya mengisi nilai textarea) ...
-            switch(type) {
-                case 'Place to Go': 
-                    list = "Bali\nRaja Ampat\nMount Bromo\nLabuan Bajo\nLake Toba\nBorobudur Temple\nKyoto\nParis\nRome\nNew York\nLondon\nSydney\nCape Town\nRio de Janeiro\nSantorini\nMaldives\nSwiss Alps\nGrand Canyon\nYogyakarta\nLombok\nTokyo\nSeoul\nBangkok\nDerawan Islands\nBelitung Island\nMachu Picchu\nDubai\nIceland\nBanff National Park\nPetra\nVenice\nAmsterdam\nSingapore\nHong Kong\nIstanbul\nBarcelona\nVancouver\nQueenstown\nHawaii\nPhuket\nHoi An\nHalong Bay\nMarrakech\nSafari in Serengeti"; 
-                    break;
-                case 'What to Eat': 
-                    list = "Fried Rice\nRendang\nChicken Satay\nChicken Soto\nGado-gado\nMeatball Soup\nChicken Noodles\nPempek\nMartabak\nPizza\nBurger\nSushi\nTacos\nPasta\nSteak\nRamen\nDim Sum\nTom Yum\nPadang Rice\nGrilled Fish\nCapcay\nSeblak\nKebab\nLasagna\nPho\nPaella\nFish and Chips\nCroissant\nFalafel\nHummus\nPoutine\nBaklava\nKimchi\nBibimbap\nPho\nMoussaka\nCeviche\nTapas\nPierogi\nRisotto\nGoulash\nChurros\nPeking Duck\nHot Pot\nBiryani\nNasi Lemak"; 
-                    break;
-                case 'Activity to Do': 
-                    list = "Watch a Movie\nRead a Book\nPlay Games\nExercise\nGo for a Walk\nCook a Meal\nGardening\nPaint or Draw\nListen to Music\nKaraoke\nLearn Something New\nClean the House\nWrite a Journal\nPhotography\nYoga or Meditate\nCamping\nHiking\nSwimming\nCycling\nHang out at a Cafe\nGo to a Concert\nVisit a Museum\nVolunteer\nLearn a New Language\nTake an Online Course\nGo Fishing\nTry Pottery\nAttend a Workshop\nGo to an Amusement Park\nTry Archery\nGo Kayaking\nTry Rock Climbing\nVisit an Aquarium\nGo Stargazing\nTry Surfing\nVisit a Local Market\nTry Stand-up Comedy\nJoin a Book Club\nTry Baking\nGo to a Theme Park"; 
-                    break;
-                case 'Games to Play': 
-                    list = "Mobile Legends\nPUBG Mobile\nValorant\nGenshin Impact\nMinecraft\nStardew Valley\nChess\nMonopoly\nUno\nWerewolf\nLudo\nSnakes and Ladders\nAmong Us\nRoblox\nFIFA\nAnimal Crossing\nLeague of Legends\nFortnite\nPlaying Cards\nCall of Duty\nApex Legends\nOverwatch\nDota 2\nCounter-Strike\nThe Sims\nPokémon Go\nClash of Clans\nClash Royale\nCandy Crush\nSudoku\nScrabble\nJenga\nPictionary\nTrivial Pursuit\nRisk\nCatan\nTetris\nPac-Man\nSuper Mario\nZelda"; 
-                    break;
-                case 'Movie Genre': 
-                    list = "Action\nComedy\nDrama\nSci-Fi\nHorror\nThriller\nRomance\nAnimation\nDocumentary\nFantasy\nMystery\nAdventure\nMusical\nCrime\nBiography\nHistorical\nFamily\nWar\nWestern\nNoir\nSports\nRom-Com\nTeen\nDisaster\nSuperhero\nMartial Arts\nPsychological\nSatire\nSilent\nShort Film"; 
-                    break;
-                case 'Music Genre': 
-                    list = "Pop\nRock\nHip Hop\nJazz\nElectronic (EDM)\nClassical\nR&B\nCountry\nReggae\nMetal\nIndie\nDangdut\nK-Pop\nJ-Pop\nFolk\nBlues\nAcoustic\nPunk\nSoul\nFunk\nDisco\nGospel\nTechno\nHouse\nDubstep\nTrap\nSka\nOpera\nOrchestral\nAmbient\nLatin\nBollywood\nAfrobeat\nBluegrass"; 
-                    break;
-                case 'Drink Choice': 
-                    list = "Black Coffee\nCoffee with Milk\nSweet Tea\nPlain Tea\nAvocado Juice\nOrange Juice\nFruit Smoothie\nMineral Water\nSoda\nHot Chocolate\nIced Coconut Water\nMilk\nTeh Tarik (Pulled Tea)\nGinger Tea\nCendol\nBoba Milk Tea\nMatcha Latte\nChai Tea\nLemonade\nIced Tea\nMilkshake\nCoconut Milk\nAlmond Milk\nGreen Tea\nHerbal Tea\nEspresso\nCappuccino\nLatte\nMocha\nWine\nBeer\nCocktail\nWhiskey\nVodka\nRum\nTequila\nSake\nSoju\nKombucha\nKefir"; 
-                    break;
-                case 'Workout Type': 
-                    list = "Cardio (Running)\nWeightlifting\nYoga\nHIIT\nPilates\nZumba\nCrossFit\nBoxing\nSwimming\nAerobics\nCycling\nPush-ups\nSit-ups\nSquats\nJumping Rope\nBadminton\nFutsal\nBasketball\nTennis\nMartial Arts\nDancing\nRowing\nClimbing\nHiking\nKickboxing\nCalisthenics\nBarre\nTRX\nPlyometrics\nFunctional Training\nTai Chi\nJogging\nSkating\nSurfing\nSnowboarding\nKayaking\nGymnastics\nParkour\nKettlebell\nCircuit Training"; 
-                    break;
-                case 'Book Genre':
-                    list = "Fiction\nNon-fiction\nScience Fiction\nFantasy\nMystery\nThriller\nRomance\nHorror\nHistorical\nBiography\nAutobiography\nSelf-help\nBusiness\nScience\nPhilosophy\nTravel\nCookbook\nPoetry\nDrama\nYoung Adult\nChildren's\nGraphic Novel\nCrime\nAdventure\nHumor\nClassic\nWestern\nDystopian\nTrue Crime\nPsychology";
-                    break;
-                case 'Hobby to Try':
-                    list = "Photography\nPainting\nKnitting\nWoodworking\nPottery\nGardening\nChess\nBlogging\nLearning an Instrument\nCalligraphy\nOrigami\nScrapbooking\nModel Building\nBird Watching\nAstronomy\nCoin Collecting\nStamp Collecting\nWine Tasting\nBaking\nHome Brewing\nStand-up Comedy\nMagic Tricks\nDancing\nSinging\nPodcasting\nLanguage Learning\nTraveling\nHiking\nCycling\nFishing";
-                    break;
-                case 'Programming Language':
-                    list = "JavaScript\nPython\nJava\nC++\nC#\nPHP\nRuby\nSwift\nGo\nRust\nKotlin\nTypeScript\nSQL\nHTML\nCSS\nR\nDart\nScala\nPerl\nHaskell\nLua\nJulia\nElixir\nClojure\nAssembly\nShell\nMATLAB\nGroovy\nObjective-C\nVB.NET";
-                    break;
-                case 'Pet to Adopt':
-                    list = "Dog\nCat\nFish\nBird\nHamster\nRabbit\nGuinea Pig\nTurtle\nSnake\nLizard\nFrog\nHermit Crab\nFerret\nChinchilla\nParrot\nGecko\nRat\nMouse\nHedgehog\nSugar Glider\nPig\nChicken\nDuck\nGoat\nHorse\nSheep\nCow\nAlpaca\nSnail\nStick Insect";
-                    break;
-                case 'Vehicle Type':
-                    list = "Car\nMotorcycle\nBicycle\nScooter\nBus\nTrain\nAirplane\nBoat\nShip\nHelicopter\nSubmarine\nTruck\nVan\nSUV\nPickup Truck\nTram\nBullet Train\nSegway\nHoverboard\nElectric Skateboard\nGolf Cart\nATV\nSnowmobile\nCable Car\nHot Air Balloon\nSpaceship\nJet Ski\nKayak\nCanoe\nYacht";
-                    break;
-                case 'Art Style':
-                    list = "Realism\nImpressionism\nAbstract\nSurrealism\nCubism\nPop Art\nMinimalism\nExpressionism\nArt Deco\nArt Nouveau\nBaroque\nRenaissance\nContemporary\nDigital Art\nStreet Art\nGraffiti\nPhotorealism\nPointillism\nFauvism\nDadaism\nFuturism\nConstructivism\nDe Stijl\nOp Art\nConceptual Art\nNaïve Art\nNeo-Expressionism\nSymbolism\nRomanticism\nUkiyo-e";
-                    break;
+            if (translations[currentLang] && translations[currentLang].lists[listKey]) {
+                inputList.value = translations[currentLang].lists[listKey];
             }
-            inputList.value = list;
             toggleClearButton();
         }
 
@@ -340,7 +301,8 @@
         }
 
         function updateNextItemDisplay(text) {
-            nextItemDisplay.textContent = text === "Randomizer" ? "Randomizer v2.2.0" : `${text} - v2.2.0`;
+            const version = "v2.3.0";
+            nextItemDisplay.textContent = text === "Randomizer" ? `Randomizer ${version}` : `${text} - ${version}`;
         }
 
         function setScreenHeight() {
