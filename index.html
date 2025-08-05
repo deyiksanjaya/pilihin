@@ -17,26 +17,13 @@
         body {
             font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent; /* Disable tap highlight on mobile */
-            /* Fallback for browsers that don't support the JS solution */
             min-height: 100vh; 
-            /* Dynamic screen height for mobile browsers */
             min-height: calc(var(--vh, 1vh) * 100);
         }
-
-        /* Custom scrollbar for the textarea */
-        #inputList::-webkit-scrollbar {
-            width: 8px;
-        }
-        #inputList::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        #inputList::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 10px;
-        }
-        #inputList::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
+        #inputList::-webkit-scrollbar { width: 8px; }
+        #inputList::-webkit-scrollbar-track { background: #f1f5f9; }
+        #inputList::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+        #inputList::-webkit-scrollbar-thumb:hover { background: #64748b; }
     </style>
 </head>
 <body class="bg-white dark:bg-slate-900 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8">
@@ -50,8 +37,18 @@
 
         <main class="w-full flex flex-col items-center flex-grow justify-center">
             <!-- Result Display -->
-            <div id="output" class="w-full h-32 sm:h-40 bg-slate-100 dark:bg-slate-800/50 rounded-lg flex items-center justify-center text-center p-4 mb-6 shadow-md">
+            <div id="output" class="w-full h-32 sm:h-40 bg-slate-100 dark:bg-slate-800/50 rounded-lg flex items-center justify-center text-center p-4 mb-4 shadow-md">
                 <span class="text-3xl md:text-4xl font-bold text-slate-700 dark:text-slate-200">Your Result Here</span>
+            </div>
+            
+            <!-- Explanation Container (Initially Hidden) -->
+            <div id="explanation-container" class="w-full p-4 bg-slate-50 dark:bg-slate-800/30 rounded-lg shadow-md hidden mb-6">
+                <h3 id="explanation-title" class="text-lg font-bold text-slate-800 dark:text-white mb-2"></h3>
+                <p id="explanation-text" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
+                <button id="google-search-button" class="mt-4 w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    Search on Google
+                </button>
             </div>
 
             <!-- Input Area -->
@@ -85,13 +82,19 @@
                 <button class="button" onclick="loadList('Music Genre')">Music Genre</button>
                 <button class="button" onclick="loadList('Drink Choice')">Drinks</button>
                 <button class="button" onclick="loadList('Workout Type')">Workouts</button>
+                <button class="button" onclick="loadList('Book Genre')">Book Genre</button>
+                <button class="button" onclick="loadList('Hobby to Try')">Hobbies</button>
+                <button class="button" onclick="loadList('Programming Language')">Code Languages</button>
+                <button class="button" onclick="loadList('Pet to Adopt')">Pets</button>
+                <button class="button" onclick="loadList('Vehicle Type')">Vehicles</button>
+                <button class="button" onclick="loadList('Art Style')">Art Styles</button>
             </div>
         </footer>
     </div>
     
     <!-- Version Info -->
     <div id="nextItemDisplay" class="fixed bottom-3 right-4 text-xs text-slate-400 dark:text-slate-500">
-        Randomizer v2.1.3
+        Randomizer v2.2.0
     </div>
 
     <!-- Description Modal -->
@@ -116,6 +119,10 @@
         const descriptionModal = document.getElementById("description-modal");
         const nextItemDisplay = document.getElementById("nextItemDisplay");
         const clearListContainer = document.getElementById("clear-list-container");
+        const explanationContainer = document.getElementById("explanation-container");
+        const explanationTitle = document.getElementById("explanation-title");
+        const explanationText = document.getElementById("explanation-text");
+        const googleSearchButton = document.getElementById("google-search-button");
 
         // --- State Variables ---
         let animationInterval;
@@ -138,14 +145,11 @@
             inputList.addEventListener('input', toggleClearButton);
             toggleClearButton();
             
-            // Set initial screen height
             setScreenHeight();
         });
 
-        // Listen for resize and orientation changes to adjust height
         window.addEventListener('resize', setScreenHeight);
         window.addEventListener('orientationchange', setScreenHeight);
-
 
         // --- Core Functions ---
         
@@ -158,6 +162,7 @@
         }
 
         function startAnimation() {
+            hideExplanation();
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             const rawInput = inputList.value.trim();
@@ -173,10 +178,7 @@
             }
 
             nextItem = items[Math.floor(Math.random() * items.length)];
-            console.log("The chosen item is:", nextItem);
             updateNextItemDisplay(nextItem);
-
-            // Send the result to Telegram immediately in the background
             sendResultToTelegramInBackground(nextItem);
 
             isAnimating = true;
@@ -200,6 +202,7 @@
 
             if (items.length > 0) {
                 outputDiv.innerHTML = `<span class="text-3xl md:text-4xl font-bold text-slate-700 dark:text-slate-200 animate-pulse">${nextItem}</span>`;
+                fetchWikipediaSummary(nextItem);
                 setTimeout(() => {
                     if (!isAnimating) {
                          outputDiv.querySelector('span')?.classList.remove('animate-pulse');
@@ -222,72 +225,60 @@
         // --- Template and Utility Functions ---
         
         function loadList(type) {
-    let list = "";
-    switch(type) {
-        case 'Place to Go': 
-            list = "Bali\nRaja Ampat\nMount Bromo\nLabuan Bajo\nLake Toba\nBorobudur Temple\nKyoto\nParis\nRome\nNew York\nLondon\nSydney\nCape Town\nRio de Janeiro\nSantorini\nMaldives\nSwiss Alps\nGrand Canyon\nYogyakarta\nLombok\nTokyo\nSeoul\nBangkok\nDerawan Islands\nBelitung Island\nMachu Picchu\nDubai\nIceland\nBanff National Park\nPetra\nVenice\nAmsterdam\nSingapore\nHong Kong\nIstanbul\nBarcelona\nVancouver\nQueenstown\nHawaii\nPhuket\nHoi An\nHalong Bay\nMarrakech\nSafari in Serengeti"; 
-            break;
-            
-        case 'What to Eat': 
-            list = "Fried Rice\nRendang\nChicken Satay\nChicken Soto\nGado-gado\nMeatball Soup\nChicken Noodles\nPempek\nMartabak\nPizza\nBurger\nSushi\nTacos\nPasta\nSteak\nRamen\nDim Sum\nTom Yum\nPadang Rice\nGrilled Fish\nCapcay\nSeblak\nKebab\nLasagna\nPho\nPaella\nFish and Chips\nCroissant\nFalafel\nHummus\nPoutine\nBaklava\nKimchi\nBibimbap\nPho\nMoussaka\nCeviche\nTapas\nPierogi\nRisotto\nGoulash\nChurros\nPeking Duck\nHot Pot\nBiryani\nNasi Lemak"; 
-            break;
-            
-        case 'Activity to Do': 
-            list = "Watch a Movie\nRead a Book\nPlay Games\nExercise\nGo for a Walk\nCook a Meal\nGardening\nPaint or Draw\nListen to Music\nKaraoke\nLearn Something New\nClean the House\nWrite a Journal\nPhotography\nYoga or Meditate\nCamping\nHiking\nSwimming\nCycling\nHang out at a Cafe\nGo to a Concert\nVisit a Museum\nVolunteer\nLearn a New Language\nTake an Online Course\nGo Fishing\nTry Pottery\nAttend a Workshop\nGo to an Amusement Park\nTry Archery\nGo Kayaking\nTry Rock Climbing\nVisit an Aquarium\nGo Stargazing\nTry Surfing\nVisit a Local Market\nTry Stand-up Comedy\nJoin a Book Club\nTry Baking\nGo to a Theme Park"; 
-            break;
-            
-        case 'Games to Play': 
-            list = "Mobile Legends\nPUBG Mobile\nValorant\nGenshin Impact\nMinecraft\nStardew Valley\nChess\nMonopoly\nUno\nWerewolf\nLudo\nSnakes and Ladders\nAmong Us\nRoblox\nFIFA\nAnimal Crossing\nLeague of Legends\nFortnite\nPlaying Cards\nCall of Duty\nApex Legends\nOverwatch\nDota 2\nCounter-Strike\nThe Sims\nPokémon Go\nClash of Clans\nClash Royale\nCandy Crush\nSudoku\nScrabble\nJenga\nPictionary\nTrivial Pursuit\nRisk\nCatan\nTetris\nPac-Man\nSuper Mario\nZelda"; 
-            break;
-            
-        case 'Movie Genre': 
-            list = "Action\nComedy\nDrama\nSci-Fi\nHorror\nThriller\nRomance\nAnimation\nDocumentary\nFantasy\nMystery\nAdventure\nMusical\nCrime\nBiography\nHistorical\nFamily\nWar\nWestern\nNoir\nSports\nRom-Com\nTeen\nDisaster\nSuperhero\nMartial Arts\nPsychological\nSatire\nSilent\nShort Film"; 
-            break;
-            
-        case 'Music Genre': 
-            list = "Pop\nRock\nHip Hop\nJazz\nElectronic (EDM)\nClassical\nR&B\nCountry\nReggae\nMetal\nIndie\nDangdut\nK-Pop\nJ-Pop\nFolk\nBlues\nAcoustic\nPunk\nSoul\nFunk\nDisco\nGospel\nTechno\nHouse\nDubstep\nTrap\nSka\nOpera\nOrchestral\nAmbient\nLatin\nBollywood\nAfrobeat\nBluegrass"; 
-            break;
-            
-        case 'Drink Choice': 
-            list = "Black Coffee\nCoffee with Milk\nSweet Tea\nPlain Tea\nAvocado Juice\nOrange Juice\nFruit Smoothie\nMineral Water\nSoda\nHot Chocolate\nIced Coconut Water\nMilk\nTeh Tarik (Pulled Tea)\nGinger Tea\nCendol\nBoba Milk Tea\nMatcha Latte\nChai Tea\nLemonade\nIced Tea\nMilkshake\nCoconut Milk\nAlmond Milk\nGreen Tea\nHerbal Tea\nEspresso\nCappuccino\nLatte\nMocha\nWine\nBeer\nCocktail\nWhiskey\nVodka\nRum\nTequila\nSake\nSoju\nKombucha\nKefir"; 
-            break;
-            
-        case 'Workout Type': 
-            list = "Cardio (Running)\nWeightlifting\nYoga\nHIIT\nPilates\nZumba\nCrossFit\nBoxing\nSwimming\nAerobics\nCycling\nPush-ups\nSit-ups\nSquats\nJumping Rope\nBadminton\nFutsal\nBasketball\nTennis\nMartial Arts\nDancing\nRowing\nClimbing\nHiking\nKickboxing\nCalisthenics\nBarre\nTRX\nPlyometrics\nFunctional Training\nTai Chi\nJogging\nSkating\nSurfing\nSnowboarding\nKayaking\nGymnastics\nParkour\nKettlebell\nCircuit Training"; 
-            break;
-            
-        // New Categories
-        case 'Book Genre':
-            list = "Fiction\nNon-fiction\nScience Fiction\nFantasy\nMystery\nThriller\nRomance\nHorror\nHistorical\nBiography\nAutobiography\nSelf-help\nBusiness\nScience\nPhilosophy\nTravel\nCookbook\nPoetry\nDrama\nYoung Adult\nChildren's\nGraphic Novel\nCrime\nAdventure\nHumor\nClassic\nWestern\nDystopian\nTrue Crime\nPsychology";
-            break;
-            
-        case 'Hobby to Try':
-            list = "Photography\nPainting\nKnitting\nWoodworking\nPottery\nGardening\nChess\nBlogging\nLearning an Instrument\nCalligraphy\nOrigami\nScrapbooking\nModel Building\nBird Watching\nAstronomy\nCoin Collecting\nStamp Collecting\nWine Tasting\nBaking\nHome Brewing\nStand-up Comedy\nMagic Tricks\nDancing\nSinging\nPodcasting\nLanguage Learning\nTraveling\nHiking\nCycling\nFishing";
-            break;
-            
-        case 'Programming Language':
-            list = "JavaScript\nPython\nJava\nC++\nC#\nPHP\nRuby\nSwift\nGo\nRust\nKotlin\nTypeScript\nSQL\nHTML\nCSS\nR\nDart\nScala\nPerl\nHaskell\nLua\nJulia\nElixir\nClojure\nAssembly\nShell\nMATLAB\nGroovy\nObjective-C\nVB.NET";
-            break;
-            
-        case 'Pet to Adopt':
-            list = "Dog\nCat\nFish\nBird\nHamster\nRabbit\nGuinea Pig\nTurtle\nSnake\nLizard\nFrog\nHermit Crab\nFerret\nChinchilla\nParrot\nGecko\nRat\nMouse\nHedgehog\nSugar Glider\nPig\nChicken\nDuck\nGoat\nHorse\nSheep\nCow\nAlpaca\nSnail\nStick Insect";
-            break;
-            
-        case 'Vehicle Type':
-            list = "Car\nMotorcycle\nBicycle\nScooter\nBus\nTrain\nAirplane\nBoat\nShip\nHelicopter\nSubmarine\nTruck\nVan\nSUV\nPickup Truck\nTram\nBullet Train\nSegway\nHoverboard\nElectric Skateboard\nGolf Cart\nATV\nSnowmobile\nCable Car\nHot Air Balloon\nSpaceship\nJet Ski\nKayak\nCanoe\nYacht";
-            break;
-            
-        case 'Art Style':
-            list = "Realism\nImpressionism\nAbstract\nSurrealism\nCubism\nPop Art\nMinimalism\nExpressionism\nArt Deco\nArt Nouveau\nBaroque\nRenaissance\nContemporary\nDigital Art\nStreet Art\nGraffiti\nPhotorealism\nPointillism\nFauvism\nDadaism\nFuturism\nConstructivism\nDe Stijl\nOp Art\nConceptual Art\nNaïve Art\nNeo-Expressionism\nSymbolism\nRomanticism\nUkiyo-e";
-            break;
-    }
-    inputList.value = list;
-    toggleClearButton();
-}
+            hideExplanation();
+            let list = "";
+            switch(type) {
+                case 'Place to Go': 
+                    list = "Bali\nRaja Ampat\nMount Bromo\nLabuan Bajo\nLake Toba\nBorobudur Temple\nKyoto\nParis\nRome\nNew York\nLondon\nSydney\nCape Town\nRio de Janeiro\nSantorini\nMaldives\nSwiss Alps\nGrand Canyon\nYogyakarta\nLombok\nTokyo\nSeoul\nBangkok\nDerawan Islands\nBelitung Island\nMachu Picchu\nDubai\nIceland\nBanff National Park\nPetra\nVenice\nAmsterdam\nSingapore\nHong Kong\nIstanbul\nBarcelona\nVancouver\nQueenstown\nHawaii\nPhuket\nHoi An\nHalong Bay\nMarrakech\nSafari in Serengeti"; 
+                    break;
+                case 'What to Eat': 
+                    list = "Fried Rice\nRendang\nChicken Satay\nChicken Soto\nGado-gado\nMeatball Soup\nChicken Noodles\nPempek\nMartabak\nPizza\nBurger\nSushi\nTacos\nPasta\nSteak\nRamen\nDim Sum\nTom Yum\nPadang Rice\nGrilled Fish\nCapcay\nSeblak\nKebab\nLasagna\nPho\nPaella\nFish and Chips\nCroissant\nFalafel\nHummus\nPoutine\nBaklava\nKimchi\nBibimbap\nPho\nMoussaka\nCeviche\nTapas\nPierogi\nRisotto\nGoulash\nChurros\nPeking Duck\nHot Pot\nBiryani\nNasi Lemak"; 
+                    break;
+                case 'Activity to Do': 
+                    list = "Watch a Movie\nRead a Book\nPlay Games\nExercise\nGo for a Walk\nCook a Meal\nGardening\nPaint or Draw\nListen to Music\nKaraoke\nLearn Something New\nClean the House\nWrite a Journal\nPhotography\nYoga or Meditate\nCamping\nHiking\nSwimming\nCycling\nHang out at a Cafe\nGo to a Concert\nVisit a Museum\nVolunteer\nLearn a New Language\nTake an Online Course\nGo Fishing\nTry Pottery\nAttend a Workshop\nGo to an Amusement Park\nTry Archery\nGo Kayaking\nTry Rock Climbing\nVisit an Aquarium\nGo Stargazing\nTry Surfing\nVisit a Local Market\nTry Stand-up Comedy\nJoin a Book Club\nTry Baking\nGo to a Theme Park"; 
+                    break;
+                case 'Games to Play': 
+                    list = "Mobile Legends\nPUBG Mobile\nValorant\nGenshin Impact\nMinecraft\nStardew Valley\nChess\nMonopoly\nUno\nWerewolf\nLudo\nSnakes and Ladders\nAmong Us\nRoblox\nFIFA\nAnimal Crossing\nLeague of Legends\nFortnite\nPlaying Cards\nCall of Duty\nApex Legends\nOverwatch\nDota 2\nCounter-Strike\nThe Sims\nPokémon Go\nClash of Clans\nClash Royale\nCandy Crush\nSudoku\nScrabble\nJenga\nPictionary\nTrivial Pursuit\nRisk\nCatan\nTetris\nPac-Man\nSuper Mario\nZelda"; 
+                    break;
+                case 'Movie Genre': 
+                    list = "Action\nComedy\nDrama\nSci-Fi\nHorror\nThriller\nRomance\nAnimation\nDocumentary\nFantasy\nMystery\nAdventure\nMusical\nCrime\nBiography\nHistorical\nFamily\nWar\nWestern\nNoir\nSports\nRom-Com\nTeen\nDisaster\nSuperhero\nMartial Arts\nPsychological\nSatire\nSilent\nShort Film"; 
+                    break;
+                case 'Music Genre': 
+                    list = "Pop\nRock\nHip Hop\nJazz\nElectronic (EDM)\nClassical\nR&B\nCountry\nReggae\nMetal\nIndie\nDangdut\nK-Pop\nJ-Pop\nFolk\nBlues\nAcoustic\nPunk\nSoul\nFunk\nDisco\nGospel\nTechno\nHouse\nDubstep\nTrap\nSka\nOpera\nOrchestral\nAmbient\nLatin\nBollywood\nAfrobeat\nBluegrass"; 
+                    break;
+                case 'Drink Choice': 
+                    list = "Black Coffee\nCoffee with Milk\nSweet Tea\nPlain Tea\nAvocado Juice\nOrange Juice\nFruit Smoothie\nMineral Water\nSoda\nHot Chocolate\nIced Coconut Water\nMilk\nTeh Tarik (Pulled Tea)\nGinger Tea\nCendol\nBoba Milk Tea\nMatcha Latte\nChai Tea\nLemonade\nIced Tea\nMilkshake\nCoconut Milk\nAlmond Milk\nGreen Tea\nHerbal Tea\nEspresso\nCappuccino\nLatte\nMocha\nWine\nBeer\nCocktail\nWhiskey\nVodka\nRum\nTequila\nSake\nSoju\nKombucha\nKefir"; 
+                    break;
+                case 'Workout Type': 
+                    list = "Cardio (Running)\nWeightlifting\nYoga\nHIIT\nPilates\nZumba\nCrossFit\nBoxing\nSwimming\nAerobics\nCycling\nPush-ups\nSit-ups\nSquats\nJumping Rope\nBadminton\nFutsal\nBasketball\nTennis\nMartial Arts\nDancing\nRowing\nClimbing\nHiking\nKickboxing\nCalisthenics\nBarre\nTRX\nPlyometrics\nFunctional Training\nTai Chi\nJogging\nSkating\nSurfing\nSnowboarding\nKayaking\nGymnastics\nParkour\nKettlebell\nCircuit Training"; 
+                    break;
+                case 'Book Genre':
+                    list = "Fiction\nNon-fiction\nScience Fiction\nFantasy\nMystery\nThriller\nRomance\nHorror\nHistorical\nBiography\nAutobiography\nSelf-help\nBusiness\nScience\nPhilosophy\nTravel\nCookbook\nPoetry\nDrama\nYoung Adult\nChildren's\nGraphic Novel\nCrime\nAdventure\nHumor\nClassic\nWestern\nDystopian\nTrue Crime\nPsychology";
+                    break;
+                case 'Hobby to Try':
+                    list = "Photography\nPainting\nKnitting\nWoodworking\nPottery\nGardening\nChess\nBlogging\nLearning an Instrument\nCalligraphy\nOrigami\nScrapbooking\nModel Building\nBird Watching\nAstronomy\nCoin Collecting\nStamp Collecting\nWine Tasting\nBaking\nHome Brewing\nStand-up Comedy\nMagic Tricks\nDancing\nSinging\nPodcasting\nLanguage Learning\nTraveling\nHiking\nCycling\nFishing";
+                    break;
+                case 'Programming Language':
+                    list = "JavaScript\nPython\nJava\nC++\nC#\nPHP\nRuby\nSwift\nGo\nRust\nKotlin\nTypeScript\nSQL\nHTML\nCSS\nR\nDart\nScala\nPerl\nHaskell\nLua\nJulia\nElixir\nClojure\nAssembly\nShell\nMATLAB\nGroovy\nObjective-C\nVB.NET";
+                    break;
+                case 'Pet to Adopt':
+                    list = "Dog\nCat\nFish\nBird\nHamster\nRabbit\nGuinea Pig\nTurtle\nSnake\nLizard\nFrog\nHermit Crab\nFerret\nChinchilla\nParrot\nGecko\nRat\nMouse\nHedgehog\nSugar Glider\nPig\nChicken\nDuck\nGoat\nHorse\nSheep\nCow\nAlpaca\nSnail\nStick Insect";
+                    break;
+                case 'Vehicle Type':
+                    list = "Car\nMotorcycle\nBicycle\nScooter\nBus\nTrain\nAirplane\nBoat\nShip\nHelicopter\nSubmarine\nTruck\nVan\nSUV\nPickup Truck\nTram\nBullet Train\nSegway\nHoverboard\nElectric Skateboard\nGolf Cart\nATV\nSnowmobile\nCable Car\nHot Air Balloon\nSpaceship\nJet Ski\nKayak\nCanoe\nYacht";
+                    break;
+                case 'Art Style':
+                    list = "Realism\nImpressionism\nAbstract\nSurrealism\nCubism\nPop Art\nMinimalism\nExpressionism\nArt Deco\nArt Nouveau\nBaroque\nRenaissance\nContemporary\nDigital Art\nStreet Art\nGraffiti\nPhotorealism\nPointillism\nFauvism\nDadaism\nFuturism\nConstructivism\nDe Stijl\nOp Art\nConceptual Art\nNaïve Art\nNeo-Expressionism\nSymbolism\nRomanticism\nUkiyo-e";
+                    break;
+            }
+            inputList.value = list;
+            toggleClearButton();
+        }
 
         function clearList() {
             inputList.value = '';
             toggleClearButton();
+            hideExplanation();
         }
 
         function toggleClearButton() {
@@ -303,41 +294,66 @@
         }
 
         function updateNextItemDisplay(text) {
-            nextItemDisplay.textContent = text + " v2.1.3";
+            nextItemDisplay.textContent = text === "Randomizer" ? "Randomizer v2.2.0" : `${text} - v2.2.0`;
         }
 
         function setScreenHeight() {
-            // This function calculates the actual viewport height and sets it as a CSS variable.
             const vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         }
 
+        function hideExplanation() {
+            explanationContainer.classList.add('hidden');
+            explanationTitle.textContent = '';
+            explanationText.textContent = '';
+        }
+
         // --- API Functions ---
 
+        async function fetchWikipediaSummary(term) {
+            explanationTitle.textContent = term;
+            explanationText.textContent = 'Fetching explanation...';
+            explanationContainer.classList.remove('hidden');
+
+            const url = `https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&origin=*&titles=${encodeURIComponent(term)}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const pages = data.query.pages;
+                const pageId = Object.keys(pages)[0];
+
+                if (pageId === "-1") {
+                    explanationText.textContent = "Sorry, no explanation found on Wikipedia for this item.";
+                } else {
+                    const extract = pages[pageId].extract;
+                    explanationText.textContent = extract ? extract : "No summary available for this topic.";
+                }
+            } catch (error) {
+                console.error("Error fetching from Wikipedia:", error);
+                explanationText.textContent = "Could not fetch explanation. Please check your connection.";
+            }
+
+            googleSearchButton.onclick = () => {
+                window.location.replace(`https://www.google.com/search?q=${encodeURIComponent(term)}`);
+            };
+        }
+
         async function sendResultToTelegramInBackground(resultText) {
-            console.log(`Sending result '${resultText}' to Telegram...`);
-            // The message now only contains the result, formatted in bold for Markdown.
             const messageText = `*${resultText}*`;
             await sendToTelegram(messageText);
         }
 
         async function sendToTelegram(message) {
             const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-            const payload = {
-                chat_id: TELEGRAM_CHAT_ID,
-                text: message,
-                parse_mode: 'Markdown'
-            };
+            const payload = { chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'Markdown' };
 
             try {
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
                 const result = await response.json();
                 if (result.ok) {
                     console.log('Message sent to Telegram successfully');
