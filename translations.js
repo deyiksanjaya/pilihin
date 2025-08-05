@@ -6,7 +6,7 @@ const translations = {
     pageTitle: "Let Fate Decide",
     pageSubtitle: "Enter your choices or pick a template",
     resultPlaceholder: "Your Result Here",
-    explanationTitle: "Explanation for",
+    explanationTitle: "Search Google for",
     inputPlaceholder: "Enter each choice on a new line...",
     clearList: "Clear list",
     startButton: "Start Picking",
@@ -42,10 +42,10 @@ const translations = {
   },
   // Bahasa Indonesia
   id: {
-    pageTitle: "Biar Kami Bantu Pilihkan",
+    pageTitle: "Kami Bantu Pilihkan",
     pageSubtitle: "Masukkan pilihanmu atau gunakan template",
     resultPlaceholder: "Hasil Pilihanmu di Sini",
-    explanationTitle: "Penjelasan untuk",
+    explanationTitle: "Cari di Google Untuk",
     inputPlaceholder: "Masukkan setiap pilihan di baris baru...",
     clearList: "Bersihkan daftar",
     startButton: "Acak!",
