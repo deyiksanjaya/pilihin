@@ -3,7 +3,7 @@
 const translations = {
   // Bahasa Inggris
   en: {
-    pageTitle: "Let Fate Decide",
+    pageTitle: "PICKER",
     pageSubtitle: "Enter your choices or pick a template",
     resultPlaceholder: "Your Result Here",
     explanationTitle: "Search Google for",
@@ -59,7 +59,7 @@ const translations = {
   },
   // Bahasa Indonesia
   id: {
-    pageTitle: "Biar Takdir yang Menentukan",
+    pageTitle: "PilihSatu.com",
     pageSubtitle: "Masukkan pilihanmu atau gunakan template",
     resultPlaceholder: "Hasil Pilihanmu di Sini",
     explanationTitle: "Cari Tau Tentang",
@@ -85,7 +85,7 @@ const translations = {
     "tpl-vehicles": "Kendaraan",
     "tpl-art": "Gaya Seni",
     // Modal
-    modalTitle: "Selamat Datang di PICKER!",
+    modalTitle: "Selamat Datang di PilihSatu!",
     modalText: "Merasa bimbang? Biarkan kami membantu! Baik itu memilih tujuan wisata, makanan berikutnya, aktivitas seru, atau permainan untuk dimainkan, cukup masukkan pilihan Anda dan kami akan memilihnya untuk Anda. Anda juga bisa menggunakan template praktis kami untuk memulai.",
     modalButton: "Mengerti!",
     // Pesan Error
